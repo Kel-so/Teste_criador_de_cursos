@@ -9,8 +9,8 @@ import io
 # 1. Configuração e Funções de Suporte
 # ==========================================
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-modelo_estrutura = genai.GenerativeModel("gemini-1.5-pro", generation_config={"response_mime_type": "application/json"})
-modelo_texto = genai.GenerativeModel("gemini-1.5-pro")
+modelo_estrutura = genai.GenerativeModel("gemini-3.1-flash-lite-preview", generation_config={"response_mime_type": "application/json"})
+modelo_texto = genai.GenerativeModel("gemini-3.1-flash-lite-preview")
 
 def extrair_texto(arquivo):
     if arquivo.type == "application/pdf":
