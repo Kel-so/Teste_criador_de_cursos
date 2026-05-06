@@ -223,19 +223,23 @@ with aba_estrutura:
         - Estrutura de Módulos: {json.dumps(modulos_config, ensure_ascii=False)}
         
         REGRAS ABSOLUTAS:
-        1. "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas com os nomes descritos na Base do Saber. Nenhuma a mais, nenhuma a menos.
-        2. "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas com os nomes descritos na Base do Saber. Nenhuma a mais, nenhuma a menos.
-        3. COBERTURA TOTAL DA NORMA (FASES 2 E 3): Analise a Norma/Tema fornecida e extraia 100% do CONTEÚDO PROGRAMÁTICO EXIGIDO para treinamento. Você é obrigado a cobrir todos os tópicos exigidos pela norma distribuindo-os nas Fases 2 e 3. NENHUM TÓPICO PODE FICAR DE FORA.
-        4. DOSAGEM PELA CARGA HORÁRIA: Use a carga horária de {carga_horaria} horas para ditar a fragmentação do conteúdo. Se a carga for alta (ex: 16h, 40h), fragmente os tópicos da norma em várias aulas separadas e aprofundadas. Se a carga for baixa (ex: 4h, 8h), agrupe múltiplos tópicos da norma dentro da mesma aula. O importante é caber no tempo sem perder o compliance normativo.
+        1. "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
+        2. "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
+        3. COBERTURA DA NORMA (FASES 2 E 3): Analise a Norma e extraia 100% do CONTEÚDO PROGRAMÁTICO EXIGIDO. Aloque esses tópicos no campo 'topicos_norma' de cada aula para comprovar o atendimento da norma. Nenhum item exigido pode ficar de fora.
         
-        Retorne o JSON neste formato exato:
+        Retorne o JSON neste formato exato (substitua os valores com a sua estruturação):
         {{
             "modulos": [
                 {{
-                    "nome": "Módulo 1 - Nome",
-                    "fase": "Fase 1 - Despertar a Curiosidade",
+                    "nome": "Módulo 2 - Fundamentação",
+                    "fase": "Fase 2 - Fundamentação Técnica",
                     "formato": "Gravado",
-                    "aulas": ["Aula 1.1 - Nome", "Aula 1.2 - Nome"]
+                    "aulas": [
+                        {{
+                            "titulo": "Aula 2.1 - Definições e Reconhecimento",
+                            "topicos_norma": "NR-33, Itens 33.1 e 33.2"
+                        }}
+                    ]
                 }}
             ]
         }}
@@ -245,7 +249,7 @@ with aba_estrutura:
             try:
                 resposta = modelo_estrutura.generate_content(prompt_json)
                 st.session_state.estrutura_curso = json.loads(resposta.text)
-                st.success("✅ Estrutura gerada com sucesso e 100% dos tópicos da norma foram mapeados! Vá para a aba 'Produção de Roteiros'.")
+                st.success("✅ Estrutura gerada com sucesso! Tópicos da norma mapeados. Vá para a aba 'Produção de Roteiros'.")
             except Exception as e:
                 st.error("Erro ao processar a estrutura JSON. Verifique os dados fornecidos e tente novamente.")
 
@@ -264,16 +268,33 @@ with aba_roteiros:
                 st.session_state.estrutura_curso["modulos"][idx_mod]["nome"] = novo_nome_mod
                 st.divider() 
                 
-                for idx_aula, aula in enumerate(modulo["aulas"]):
+                for idx_aula, aula_obj in enumerate(modulo["aulas"]):
                     chave_roteiro = f"{idx_mod}_{idx_aula}"
                     texto_gerado = st.session_state.roteiros_gerados.get(chave_roteiro)
+                    
+                    # Compatibilidade (caso o JSON venha com strings ou dicionários)
+                    if isinstance(aula_obj, str):
+                        titulo_atual = aula_obj
+                        topicos_atual = ""
+                    else:
+                        titulo_atual = aula_obj.get("titulo", "")
+                        topicos_atual = aula_obj.get("topicos_norma", "")
                     
                     col_aula, col_tipo, col_btn, col_ler, col_baixar = st.columns([5, 3, 2, 1, 1], vertical_alignment="center")
                     
                     with col_aula:
-                        nova_aula = st.text_input("Aula", value=aula, key=f"aula_{chave_roteiro}", label_visibility="collapsed")
-                        st.session_state.estrutura_curso["modulos"][idx_mod]["aulas"][idx_aula] = nova_aula
-                    
+                        nova_aula = st.text_input("Aula", value=titulo_atual, key=f"aula_tit_{chave_roteiro}", label_visibility="collapsed")
+                        
+                        # Exibe os tópicos da norma embaixo do nome da aula
+                        if topicos_atual and topicos_atual not in ["N/A", "N/A.", ""]:
+                            st.caption(f"📌 **Norma/Treinamento:** {topicos_atual}")
+                            
+                        # Salva de volta no estado
+                        if isinstance(aula_obj, str):
+                            st.session_state.estrutura_curso["modulos"][idx_mod]["aulas"][idx_aula] = nova_aula
+                        else:
+                            st.session_state.estrutura_curso["modulos"][idx_mod]["aulas"][idx_aula]["titulo"] = nova_aula
+                            
                     with col_tipo:
                         tipo_geracao = st.selectbox("Template", list(TEMPLATES.keys()), key=f"tipo_{chave_roteiro}", label_visibility="collapsed")
                     
@@ -298,9 +319,14 @@ with aba_roteiros:
                             )
                             
                     if gerar_clicado:
+                        # Junta o título da aula e os tópicos obrigatórios para forçar a IA no prompt
+                        aula_contexto = nova_aula
+                        if topicos_atual and topicos_atual not in ["N/A", "N/A.", ""]:
+                            aula_contexto += f" | Foco Obrigatório na Norma: {topicos_atual}"
+
                         formato_aula = modulo.get("formato", "Gravado")
                         prompt_final = TEMPLATES[tipo_geracao].format(
-                            aula=nova_aula, 
+                            aula=aula_contexto, 
                             pedagogico=pedagogico_texto, 
                             norma=norma_texto,
                             formato=formato_aula,
