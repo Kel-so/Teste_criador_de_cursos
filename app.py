@@ -49,14 +49,19 @@ Crie o roteiro de gravação DETALHADO para a aula: {aula}.
 
 REGRA ABSOLUTA: Você DEVE estruturar o roteiro rigorosamente conforme o 'Modelo de Aula - Estrutura Detalhada' presente na Base de Produção fornecida.
 
-Use formatação rica (negrito, tópicos) e emojis. Seu retorno DEVE conter OBRIGATORIAMENTE os seguintes blocos descritos na Base:
+Use formatação rica (negrito, tópicos) e emojis. Seu retorno DEVE conter OBRIGATORIAMENTE os seguintes blocos:
+
 - 🎯 Título Impactante (Curioso e direto)
 - 💬 Frase de Abertura (Para gerar conexão)
-- 🎥 Bloco de Vídeo (ATENÇÃO: Este é o coração da aula. Escreva o roteiro DENSO E DETALHADO do que o instrutor vai explicar na câmera, projetado para durar de 3 a 7 minutos de fala. NÃO RESUMA. Traga a fundamentação técnica completa exigida para esta aula, conectando com a norma, citando exemplos da vida real e mantendo a linguagem humana e direta da Saber Gestão.)
+- 🎥 Bloco de Vídeo: 
+   ATENÇÃO: Este é o roteiro exato da fala do professor (estilo teleprompter). 
+   TOM DE VOZ: Conversacional, humano, empático e direto. Sem academicismo engessado. 
+   ESTRUTURA DA FALA: Use parágrafos curtos (1 a 3 frases no máximo por parágrafo) para dar ritmo de respiração. Comece sempre conectando o tema com uma situação real ou dor do aluno no dia a dia. Depois, traga a fundamentação técnica da norma de forma mastigada e fluida. Termine mostrando o impacto prático disso e fazendo um gancho para a próxima aula. Inspire-se em scripts de vídeos dinâmicos de alta qualidade.
 - 📝 Bloco de Texto Guiado (Resumo em tópicos curtos e pontos-chave com até 3 linhas por bloco)
 - 🛠️ Bloco de Aplicação (Passo a passo prático para o dia a dia, como aplicar)
-- 🤔 Bloco de Reflexão (Pergunta estratégica para o aluno)
+- 🤔 Bloco de Reflexão (Pergunta reflexiva estratégica para o aluno)
 - ❓ Quiz (1 ou 2 questões com 4 alternativas focadas na prática)
+- 🎯 Resultado da Aula (Lista do que o aluno atingiu ao final desta aula)
 
 Contexto Técnico da Norma: {norma}
 Diretrizes do Projeto Pedagógico: {pedagogico}
@@ -64,13 +69,13 @@ Base de Produção: {base_producao}""",
 
     "Roteiro de Materiais": "Liste todos os equipamentos, EPIs, e ferramentas visuais necessárias para demonstrar na prática os conceitos da aula: {aula}. Baseie-se na norma: {norma}.",
     
-    "Prompts para Imagens IA": "Crie 3 prompts detalhados em inglês para gerar imagens de apoio visual para a aula: {aula}. As imagens devem ter estilo realista, iluminação de estúdio, proporção 16:9 e focar no tema central da aula. Apenas entregue os prompts em texto puro."
+    "Prompts IA (Imagens)": "Crie 3 prompts detalhados em inglês para gerar imagens de apoio visual para a aula: {aula}. As imagens devem ter estilo realista, iluminação de estúdio, proporção 16:9 e focar no tema central da aula. Apenas entregue os prompts em texto puro."
 }
 
 # ==========================================
 # 3. Interface Visual e Estados
 # ==========================================
-st.set_page_config(page_title="Sistema de Produção de Cursos", layout="wide")
+st.set_page_config(page_title="Studio Saber - IA", layout="wide", page_icon="⚙️")
 st.title("⚙️ Gerador de Estrutura e Roteiros")
 
 if "estrutura_curso" not in st.session_state:
@@ -79,7 +84,7 @@ if "roteiros_gerados" not in st.session_state:
     st.session_state.roteiros_gerados = {}
 
 with st.sidebar:
-    st.header("Arquivos de Base")
+    st.header("📂 Arquivos de Base")
     file_norma = st.file_uploader("1. Norma (Ex: NR-33)", type=["pdf", "docx", "txt"])
     file_pedagogico = st.file_uploader("2. Projeto Pedagógico", type=["pdf", "docx", "txt"])
     file_base_producao = st.file_uploader("3. Base de Produção", type=["pdf", "docx", "txt"])
@@ -88,7 +93,7 @@ norma_texto = extrair_texto(file_norma)
 pedagogico_texto = extrair_texto(file_pedagogico)
 base_producao_texto = extrair_texto(file_base_producao)
 
-aba_estrutura, aba_roteiros = st.tabs(["1. Estruturar Curso", "2. Produção de Roteiros"])
+aba_estrutura, aba_roteiros = st.tabs(["🏗️ 1. Estruturar Curso", "📝 2. Produção de Roteiros"])
 
 # ==========================================
 # ABA 1: Geração da Estrutura Inicial
@@ -99,9 +104,9 @@ with aba_estrutura:
     arquivos_ok = norma_texto and pedagogico_texto and base_producao_texto
     
     if not arquivos_ok:
-        st.warning("Aguardando upload de todos os arquivos base na lateral...")
+        st.info("💡 Aguardando upload de todos os arquivos base na lateral para liberar a geração.")
     
-    if st.button("Gerar Estrutura do Curso", disabled=not arquivos_ok):
+    if st.button("🚀 Gerar Estrutura do Curso", disabled=not arquivos_ok):
         prompt_json = f"""
         Sua tarefa principal é EXTRAIR a estrutura do curso fornecida no Projeto Pedagógico e formatá-la em JSON.
         NÃO crie módulos novos. NÃO divida módulos existentes.
@@ -135,7 +140,7 @@ with aba_estrutura:
             try:
                 resposta = modelo_estrutura.generate_content(prompt_json)
                 st.session_state.estrutura_curso = json.loads(resposta.text)
-                st.success("Estrutura gerada! Vá para a aba 'Produção de Roteiros'.")
+                st.success("✅ Estrutura gerada! Vá para a aba 'Produção de Roteiros'.")
             except Exception as e:
                 st.error("Erro ao processar a estrutura. Verifique os arquivos e tente novamente.")
 
@@ -144,7 +149,8 @@ with aba_estrutura:
 # ==========================================
 with aba_roteiros:
     if st.session_state.estrutura_curso:
-        st.markdown("### Estrutura (Edite, Adicione ou Remova Aulas)")
+        st.markdown("### 🗂️ Estrutura do Curso")
+        st.caption("Edite os nomes, escolha o template e gere o conteúdo. Os botões de leitura e download aparecerão automaticamente à direita.")
         
         for idx_mod, modulo in enumerate(st.session_state.estrutura_curso["modulos"]):
             with st.expander(modulo["nome"], expanded=True):
@@ -152,22 +158,43 @@ with aba_roteiros:
                 novo_nome_mod = st.text_input("Nome do Módulo", value=modulo["nome"], key=f"mod_{idx_mod}")
                 st.session_state.estrutura_curso["modulos"][idx_mod]["nome"] = novo_nome_mod
                 
+                st.divider() # Linha sutil separando o título do módulo da lista de aulas
+                
                 for idx_aula, aula in enumerate(modulo["aulas"]):
                     chave_roteiro = f"{idx_mod}_{idx_aula}"
+                    texto_gerado = st.session_state.roteiros_gerados.get(chave_roteiro)
                     
-                    col_aula, col_tipo, col_btn = st.columns([3, 1, 1])
+                    # Colunas alinhadas ao centro para manter a estética impecável
+                    col_aula, col_tipo, col_btn, col_ler, col_baixar = st.columns([5, 3, 2, 1, 1], vertical_alignment="center")
                     
                     with col_aula:
-                        nova_aula = st.text_input(f"Aula {idx_aula + 1}", value=aula, key=f"aula_{chave_roteiro}", label_visibility="collapsed")
+                        nova_aula = st.text_input("Aula", value=aula, key=f"aula_{chave_roteiro}", label_visibility="collapsed")
                         st.session_state.estrutura_curso["modulos"][idx_mod]["aulas"][idx_aula] = nova_aula
                     
                     with col_tipo:
                         tipo_geracao = st.selectbox("Template", list(TEMPLATES.keys()), key=f"tipo_{chave_roteiro}", label_visibility="collapsed")
                     
                     with col_btn:
-                        gerar_clicado = st.button("Gerar IA", key=f"btn_{chave_roteiro}", use_container_width=True)
-                        
-                    # Lógica de geração do Roteiro
+                        gerar_clicado = st.button("✨ Gerar IA", key=f"btn_{chave_roteiro}", use_container_width=True)
+                    
+                    with col_ler:
+                        if texto_gerado:
+                            with st.popover("👁️", use_container_width=True):
+                                st.markdown(texto_gerado)
+                    
+                    with col_baixar:
+                        if texto_gerado:
+                            docx_file = gerar_docx(texto_gerado)
+                            st.download_button(
+                                label="📥",
+                                data=docx_file,
+                                file_name=f"Roteiro_{nova_aula[:15].strip()}.docx",
+                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                key=f"down_{chave_roteiro}",
+                                use_container_width=True
+                            )
+                            
+                    # Lógica de geração fica separada para não travar o layout
                     if gerar_clicado:
                         prompt_final = TEMPLATES[tipo_geracao].format(
                             aula=nova_aula, 
@@ -175,29 +202,10 @@ with aba_roteiros:
                             norma=norma_texto,
                             base_producao=base_producao_texto
                         )
-                        with st.spinner(f"Processando {tipo_geracao}..."):
+                        with st.spinner(f"Escrevendo {tipo_geracao}..."):
                             resultado = modelo_texto.generate_content(prompt_final)
-                            # Salva o texto gerado na memória do Streamlit
                             st.session_state.roteiros_gerados[chave_roteiro] = resultado.text
-                            st.rerun() # Atualiza a tela para exibir os botões de ler/baixar
-                    
-                    # Exibe os botões de Ler e Baixar apenas se o roteiro já foi gerado
-                    if chave_roteiro in st.session_state.roteiros_gerados:
-                        texto_gerado = st.session_state.roteiros_gerados[chave_roteiro]
-                        
-                        col_espaco, col_ler, col_baixar = st.columns([3, 1, 1])
-                        with col_ler:
-                            with st.popover("Ler Roteiro", use_container_width=True):
-                                st.markdown(texto_gerado)
-                        with col_baixar:
-                            docx_file = gerar_docx(texto_gerado)
-                            st.download_button(
-                                label="Baixar DOCX",
-                                data=docx_file,
-                                file_name=f"Roteiro_{nova_aula[:15].strip()}.docx",
-                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                key=f"down_{chave_roteiro}",
-                                use_container_width=True
-                            )
+                            st.rerun() 
+                            
     else:
         st.info("A estrutura do curso aparecerá aqui após ser gerada na aba anterior.")
