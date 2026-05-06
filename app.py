@@ -225,21 +225,29 @@ with aba_estrutura:
         REGRAS ABSOLUTAS E SEPARAÇÃO DE FASES:
         1. MÓDULOS DE FASE 1 (Despertar): DEVEM ter exatamente as 4 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
         2. MÓDULOS DE FASE 4 (Ação/Reflexão): DEVEM ter exatamente as 2 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
-        3. MÓDULOS DE FASE 2 (Fundamentação Técnica - Módulo 2): É OBRIGATÓRIO extrair e cobrir 100% do CONTEÚDO PROGRAMÁTICO TEÓRICO exigido pela norma. Aloque esses tópicos rigorosamente no campo 'topicos_norma'. NENHUM item teórico exigido pela norma pode ficar de fora.
-        4. MÓDULOS DE FASE 3 (Aplicação Prática - Módulo 3): Este módulo NÃO PODE ter aulas teóricas. Crie EXCLUSIVAMENTE aulas de práticas, estudos de caso, simulações, uso de checklists, passo a passo e resolução de problemas reais. O campo 'topicos_norma' deve referenciar a prática do conteúdo abordado.
-        5. DOSAGEM PELA CARGA HORÁRIA: Use a carga horária de {carga_horaria} horas para ditar a fragmentação nas fases 2 e 3. Se a carga for alta, crie mais aulas aprofundadas. Se for baixa, agrupe os tópicos.
+        3. COBERTURA TOTAL DA NORMA (FASES 2 E 3): Analise a Norma/Tema fornecida e extraia 100% do CONTEÚDO PROGRAMÁTICO EXIGIDO para o treinamento.
+        4. REGRA DE GRANULARIDADE EXTREMA (MÓDULO 2): É EXPRESSAMENTE PROIBIDO agrupar múltiplos tópicos ou alíneas da norma na mesma aula. A regra é: NO MÍNIMO 1 aula exclusiva para cada alínea exigida.
+        5. DIVISÃO OBRIGATÓRIA DE TÓPICOS COMPOSTOS: Se um tópico da norma exigir duas ou mais coisas na mesma frase (Exemplo real: "riscos potenciais inerentes ao trabalho em altura e medidas de prevenção e controle"), você DEVE OBRIGATORIAMENTE quebrar isso em aulas separadas. 
+           Exemplo de como você DEVE fazer:
+           - Aula X: Riscos potenciais inerentes ao trabalho (Tópico c.1)
+           - Aula Y: Medidas de prevenção e controle (Tópico c.2)
+        6. MÓDULOS DE FASE 3 (Aplicação Prática): Este módulo NÃO PODE ter aulas teóricas. Crie EXCLUSIVAMENTE aulas focadas na prática (estudos de caso, simulações, preenchimento de PT/PET, uso de checklists e resolução de problemas).
         
-        Retorne o JSON neste formato exato (substitua os valores com a sua estruturação):
+        Retorne o JSON neste formato exato (substitua os valores com a sua estruturação baseada nas regras acima):
         {{
             "modulos": [
                 {{
-                    "nome": "Módulo 2 - Fundamentação",
+                    "nome": "Módulo 2 - Fundamentação Técnica",
                     "fase": "Fase 2 - Fundamentação Técnica",
                     "formato": "Gravado",
                     "aulas": [
                         {{
-                            "titulo": "Aula 2.1 - Definições e Reconhecimento",
-                            "topicos_norma": "NR-33, Itens 33.1 e 33.2"
+                            "titulo": "Aula 2.1 - Riscos Potenciais",
+                            "topicos_norma": "Alínea c.1: Riscos potenciais inerentes ao trabalho"
+                        }},
+                        {{
+                            "titulo": "Aula 2.2 - Medidas de Prevenção e Controle",
+                            "topicos_norma": "Alínea c.2: Medidas de prevenção e controle"
                         }}
                     ]
                 }}
@@ -247,11 +255,11 @@ with aba_estrutura:
         }}
         """
         
-        with st.spinner("Mapeando a norma e desenhando a estrutura pedagógica..."):
+        with st.spinner("Mapeando a norma com granularidade extrema..."):
             try:
                 resposta = modelo_estrutura.generate_content(prompt_json)
                 st.session_state.estrutura_curso = json.loads(resposta.text)
-                st.success("✅ Estrutura gerada com sucesso! Tópicos da norma mapeados. Vá para a aba 'Produção de Roteiros'.")
+                st.success("✅ Estrutura gerada com sucesso! Tópicos da norma detalhados 1 a 1. Vá para a aba 'Produção de Roteiros'.")
             except Exception as e:
                 st.error("Erro ao processar a estrutura JSON. Verifique os dados fornecidos e tente novamente.")
 
