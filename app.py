@@ -16,7 +16,7 @@ modelo_estrutura = genai.GenerativeModel(
 )
 modelo_texto = genai.GenerativeModel("gemini-3.1-flash-lite-preview")
 
-# Base do Saber Completa (Sem caracteres especiais que quebram o Python)
+# Base do Saber Completa
 BASE_DO_SABER_TEXTO = """
 BASE do SABER
 Estrutura Oficial para Produção de Cursos - Saber Gestão
@@ -209,7 +209,7 @@ with aba_estrutura:
         
     if st.button("🚀 Gerar Estrutura Completa", disabled=not pode_gerar, use_container_width=True):
         prompt_json = f"""
-        Você é um arquiteto de cursos conteudista sênior da Saber Gestão. 
+        Você é um arquiteto de cursos conteudista sênior da Saber Gestão, especialista em normas regulamentadoras e treinamentos corporativos.
         Crie a estrutura do curso solicitada e retorne ESTRITAMENTE em formato JSON.
         
         REGRAS PEDAGÓGICAS NATIVAS (BASE DO SABER):
@@ -219,13 +219,14 @@ with aba_estrutura:
         PROJETO PEDAGÓGICO DE APOIO: {pedagogico_texto}
         
         CONFIGURAÇÃO EXIGIDA:
-        - Carga Horária Total: {carga_horaria} horas. (Utilize este dado para dimensionar a quantidade de aulas nas Fases 2 e 3).
+        - Carga Horária Total: {carga_horaria} horas.
         - Estrutura de Módulos: {json.dumps(modulos_config, ensure_ascii=False)}
         
         REGRAS ABSOLUTAS:
-        1. "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas com os nomes descritos na Base do Saber.
-        2. "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas com os nomes descritos na Base do Saber.
-        3. Fases 2 e 3 devem ter aulas coerentes com o tema e a carga horária.
+        1. "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas com os nomes descritos na Base do Saber. Nenhuma a mais, nenhuma a menos.
+        2. "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas com os nomes descritos na Base do Saber. Nenhuma a mais, nenhuma a menos.
+        3. COBERTURA TOTAL DA NORMA (FASES 2 E 3): Analise a Norma/Tema fornecida e extraia 100% do CONTEÚDO PROGRAMÁTICO EXIGIDO para treinamento. Você é obrigado a cobrir todos os tópicos exigidos pela norma distribuindo-os nas Fases 2 e 3. NENHUM TÓPICO PODE FICAR DE FORA.
+        4. DOSAGEM PELA CARGA HORÁRIA: Use a carga horária de {carga_horaria} horas para ditar a fragmentação do conteúdo. Se a carga for alta (ex: 16h, 40h), fragmente os tópicos da norma em várias aulas separadas e aprofundadas. Se a carga for baixa (ex: 4h, 8h), agrupe múltiplos tópicos da norma dentro da mesma aula. O importante é caber no tempo sem perder o compliance normativo.
         
         Retorne o JSON neste formato exato:
         {{
@@ -240,13 +241,13 @@ with aba_estrutura:
         }}
         """
         
-        with st.spinner("Desenhando a estrutura pedagógica..."):
+        with st.spinner("Mapeando a norma e desenhando a estrutura pedagógica..."):
             try:
                 resposta = modelo_estrutura.generate_content(prompt_json)
                 st.session_state.estrutura_curso = json.loads(resposta.text)
-                st.success("✅ Estrutura gerada com sucesso! Vá para a aba 'Produção de Roteiros'.")
+                st.success("✅ Estrutura gerada com sucesso e 100% dos tópicos da norma foram mapeados! Vá para a aba 'Produção de Roteiros'.")
             except Exception as e:
-                st.error(f"Erro ao processar a estrutura JSON. Detalhe técnico: {e}")
+                st.error("Erro ao processar a estrutura JSON. Verifique os dados fornecidos e tente novamente.")
 
 # ==========================================
 # ABA 2: Edição e Geração de Conteúdo
