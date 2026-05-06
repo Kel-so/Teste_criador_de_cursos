@@ -6,7 +6,7 @@ from docx import Document
 import io
 
 # ==========================================
-# 1. Configuração e Funções de Suporte
+# 1. Configuração e Variáveis Fixas
 # ==========================================
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
@@ -16,6 +16,89 @@ modelo_estrutura = genai.GenerativeModel(
 )
 modelo_texto = genai.GenerativeModel("gemini-3.1-flash-lite-preview")
 
+# A Base do Saber agora é o "cérebro" nativo do sistema
+BASE_DO_SABER_TEXTO = """
+BASE do SABER
+Estrutura Oficial para Produção de Cursos - Saber Gestão
+
+Introdução
+No Saber Gestão, acreditamos que educação de verdade transforma comportamento e gera resultado. Para garantir que nossos cursos entreguem essa transformação, estamos desenvolvendo o Algoritmo do SABER - uma metodologia completa e validada que será a base de todos os nossos produtos educacionais.
+Enquanto essa metodologia está em fase final de validação, estruturamos a BASE do SABER - uma estrutura didática clara, prática e alinhada com nossos princípios, que orienta a produção de cursos com consistência, aplicabilidade e qualidade.
+
+A BASE do SABER tem como objetivo:
+- Padronizar a criação de cursos, mesmo com temas, formatos e instrutores diferentes;
+- Garantir coerência didática e fluidez na experiência do aluno;
+- Assegurar que todo curso entregue valor real: Despertando Curiosidade, Fundamentando o Conteúdo, Promovendo aplicação Prática e Conduzindo o aluno à Ação.
+
+Essa base não é uma simples sequência de etapas. Ela é uma orientação estratégica e andragógica, que garante consistência sem engessar a criatividade. Os cursos podem ser técnicos, comportamentais, normativos ou estratégicos e essa estrutura se adapta a todos, desde que os objetivos de cada módulo sejam respeitados.
+Importante: A BASE do SABER é o nosso modelo oficial em uso, pensado com o mesmo rigor do Algoritmo do SABER. Ela consolida as boas práticas da nossa equipe de conteúdo e prepara o caminho para a evolução definitiva da metodologia.
+Ao seguir essa estrutura, o time garante que os cursos da Saber Gestão entreguem o que prometem: aprendizado aplicável, prática reflexiva e transformação profissional.
+
+Fase 1 - Despertar a Curiosidade
+Objetivo: Gerar interesse genuíno, criar conexão emocional e apresentar o "porquê" do curso.
+Aulas obrigatórias:
+Aula 1 - Introdução e Apresentação do Curso: Apresente o tema, objetivos e benefícios diretos para o aluno.
+Aula 2 - Provocação / Pergunta Reflexiva: Levante uma pergunta poderosa que instigue pensamento crítico e curiosidade.
+Aula 3 - Observação Inicial. Escolher entre: Desmistificação: "Do que não se trata esse tema" (evita distorções comuns), ou Case real ou história de aplicação prática, preferencialmente impactante e direto.
+Aula 4 - Conclusão do Módulo: Autodiagnóstico sobre o conhecimento ou prática atual - SaberForm ou estrutura compatível dentro da ferramenta; Fechamento com reforço da importância do aprendizado.
+Duração sugerida: 10 a 15 minutos. Formato: Vídeos curtos + texto reflexivo + formulário simples de autodiagnóstico.
+
+Fase 2 - Fundamentação Técnica
+Objetivo: Explicar com profundidade e clareza técnica o "o que é" do tema, oferecendo múltiplas formas de assimilação.
+Diretrizes:
+- Sem número fixo de aulas: devem ser incluídas quantas forem necessárias para garantir compreensão sólida;
+- Cada aula deve tratar um conceito específico, com exemplos práticos e linguagem acessível.
+Recursos sugeridos: Vídeos explicativos, Textos complementares, Materiais visuais (infográficos, esquemas, tabelas), Quizzes de fixação (3 a 5 questões por bloco), Pergunta(s) do Saber (anular o piloto automático).
+Este módulo só é considerado completo quando o aluno tem clareza técnica para aplicar o conteúdo, mesmo que ainda não tenha feito isso na prática.
+
+Fase 3 - Aplicação e Atividades
+Objetivo: Ensinar como aplicar o que foi aprendido e estimular a prática ativa.
+Elementos obrigatórios (sem limitação de número de aulas):
+- Exemplos de aplicação prática: Casos reais, simulações, passo a passo, erros comuns, boas práticas;
+- Estudo de caso ou simulação: Situação real ou hipotética onde o conhecimento pode ser testado;
+- Atividade prática orientada: Desafio, roteiro, checklist, canvas ou formulário guiado;
+- Quiz de reforço ou autoavaliação prática: Fixação do conteúdo com perguntas aplicadas à realidade do aluno.
+O módulo deve entregar concretamente a aplicação do conteúdo, independentemente da área de atuação do aluno (qualidade, segurança, gestão etc.).
+
+Fase 4 - Ação e Reflexão Final
+Objetivo: Induzir o aluno à ação prática ou à reflexão estratégica, com foco em transformação real.
+Aulas obrigatórias:
+Aula 1 - Ação recomendada no cotidiano: Indicação objetiva do que o aluno pode/deve aplicar após o curso. Reflexão final (individual ou coletiva): Pergunta estratégica para conexão com o contexto pessoal ou profissional, que pode ser registrada no PDI ou publicada na comunidade.
+Aula 2 - Fechamento do curso: Recapitulação dos principais aprendizados e reforço do propósito. Incentivo à continuidade (trilhas, desafios, próximas ações). Formulário de Satisfação do curso - SaberForm: Breve formulário e bem objetivo, buscando gerar um valor palpável (nota da pesquisa) da perspectiva do aluno sobre o curso.
+Duração sugerida: 5 a 10 minutos. Formato: Vídeo final + espaço de resposta/reflexão + PDF (opcional) com plano de ação.
+
+Estrutura de Módulos
+OBS. Todos os cursos devem ter no mínimo 4 módulos, sendo um para cada uma das fases, sendo que conteúdos muito extensos, como normativos e afins, as fases 2 e 3 podem se repetir quantas vezes forem necessárias, conforme o conteúdo aplicável.
+
+Modelo de Aula - Estrutura Detalhada (Novo Saber Play)
+Objetivo: Criar aulas modulares e integradas, com fluxo narrativo, blocos interativos e uma jornada de aprendizagem envolvente, sem parecer fragmentada. Esta estrutura deve ser aplicada em todas as aulas dos quatro módulos. O conteúdo muda conforme o módulo, mas o formato interno permanece o mesmo, garantindo consistência na experiência do aluno.
+
+Ordem e Função de Cada Bloco OBRIGATÓRIO:
+0 | Título Impactante: Captar a atenção imediatamente (Curioso, direto, provocativo)
+1 | Frase de Abertura: Criar expectativa e gerar conexão (Pode ser emocional, racional ou provocativa, 1-2 linhas)
+2 | Bloco de Vídeo: Entregar explicação base e conexão humana (Duração: 3 a 7 minutos)
+3 | Bloco de Texto Guiado: Reforçar e estruturar o conteúdo aprendido (Frases curtas, listas, microexemplos)
+4 | Bloco de Aplicação: Traduzir teoria em ação prática (Checklist, passo a passo, roteiro)
+5 | Reflexão ou Escrita Ativa: Estimular personalização do aprendizado (Campo de anotação ou instrução para registro)
+6 | Quiz ou Avaliação Rápida (opcional): Verificar fixação e reforçar aprendizagem (3 a 5 perguntas contextualizadas - sempre com 4 alternativas)
+7 | Bloco Complementar (opcional): Expandir visão para alunos protagonistas (Links, PDFs, materiais extras)
+
+Fluxo Narrativo da Aula: Desperta → Conecta → Ensina → Estrutura → Aplica → Faz pensar → Reforça → Expande.
+
+Regras Visuais e de Escrita:
+- Evite parágrafos longos (máximo 3 linhas por bloco)
+- Use destaque visual (negrito, bullets, emojis leves como 🎯)
+- Títulos dos blocos devem ser curtos e funcionais
+- Evite jargões desnecessários: clareza vence o tecnicismo
+- Evitar criar aulas com quantidade exagerada de blocos
+- Evitar criar aulas em que o conteúdo aplicado é excessivamente extensivo
+- Evitar aulas diferentes com blocos redundantes
+- A organização dos blocos deve ser visualmente agradável
+"""
+
+# ==========================================
+# 2. Funções de Suporte e Templates
+# ==========================================
 def extrair_texto(arquivo):
     if arquivo is None:
         return ""
@@ -32,7 +115,6 @@ def extrair_texto(arquivo):
         return arquivo.read().decode("utf-8")
 
 def gerar_docx(texto):
-    """Cria um arquivo DOCX em memória para o botão de download"""
     doc = Document()
     for linha in texto.split('\n'):
         doc.add_paragraph(linha)
@@ -40,36 +122,32 @@ def gerar_docx(texto):
     doc.save(bio)
     return bio.getvalue()
 
-# ==========================================
-# 2. Roteiros Base (Templates)
-# ==========================================
 TEMPLATES = {
-    "Roteiro de Aula": """Atue como um instrutor técnico especializado e conteudista sênior da Saber Gestão. 
-Crie o roteiro de gravação DETALHADO para a aula: {aula}.
+    "Roteiro de Aula": f"""Atue como um instrutor técnico especializado e conteudista sênior da Saber Gestão. 
+Crie o roteiro de gravação DETALHADO para a aula: {{aula}}.
 
-REGRA ABSOLUTA: Você DEVE estruturar o roteiro rigorosamente conforme o 'Modelo de Aula - Estrutura Detalhada' presente na Base de Produção fornecida.
+REGRA ABSOLUTA: Siga a estrutura da Base do Saber fornecida abaixo.
 
 Use formatação rica (negrito, tópicos) e emojis. Seu retorno DEVE conter OBRIGATORIAMENTE os seguintes blocos:
-
 - 🎯 Título Impactante (Curioso e direto)
 - 💬 Frase de Abertura (Para gerar conexão)
 - 🎥 Bloco de Vídeo: 
    ATENÇÃO: Este é o roteiro exato da fala do professor (estilo teleprompter). 
-   TOM DE VOZ: Conversacional, humano, empático e direto. Sem academicismo engessado. 
-   ESTRUTURA DA FALA: Use parágrafos curtos (1 a 3 frases no máximo por parágrafo) para dar ritmo de respiração. Comece sempre conectando o tema com uma situação real ou dor do aluno no dia a dia. Depois, traga a fundamentação técnica da norma de forma mastigada e fluida. Termine mostrando o impacto prático disso e fazendo um gancho para a próxima aula. Inspire-se em scripts de vídeos dinâmicos de alta qualidade.
-- 📝 Bloco de Texto Guiado (Resumo em tópicos curtos e pontos-chave com até 3 linhas por bloco)
-- 🛠️ Bloco de Aplicação (Passo a passo prático para o dia a dia, como aplicar)
-- 🤔 Bloco de Reflexão (Pergunta reflexiva estratégica para o aluno)
+   TOM DE VOZ: Conversacional, humano, empático e direto. Parágrafos curtos (1 a 3 frases). Conecte com a vida real. Formato: {{formato}}.
+- 📝 Bloco de Texto Guiado (Resumo em tópicos curtos, 3 linhas máx)
+- 🛠️ Bloco de Aplicação (Passo a passo prático)
+- 🤔 Bloco de Reflexão (Pergunta estratégica)
 - ❓ Quiz (1 ou 2 questões com 4 alternativas focadas na prática)
-- 🎯 Resultado da Aula (Lista do que o aluno atingiu ao final desta aula)
+- 🎯 Resultado da Aula (O que o aluno atingiu)
 
-Contexto Técnico da Norma: {norma}
-Diretrizes do Projeto Pedagógico: {pedagogico}
-Base de Produção: {base_producao}""",
+Base de Produção Nativa:
+{BASE_DO_SABER_TEXTO}
 
-    "Roteiro de Materiais": "Liste todos os equipamentos, EPIs, e ferramentas visuais necessárias para demonstrar na prática os conceitos da aula: {aula}. Baseie-se na norma: {norma}.",
-    
-    "Prompts IA (Imagens)": "Crie 3 prompts detalhados em inglês para gerar imagens de apoio visual para a aula: {aula}. As imagens devem ter estilo realista, iluminação de estúdio, proporção 16:9 e focar no tema central da aula. Apenas entregue os prompts em texto puro."
+Contexto Técnico da Norma: {{norma}}
+Diretrizes Adicionais: {{pedagogico}}""",
+
+    "Roteiro de Materiais": "Liste todos os equipamentos, EPIs, e ferramentas necessárias para demonstrar na prática os conceitos da aula: {aula}. Base: {norma}.",
+    "Prompts IA (Imagens)": "Crie 3 prompts em inglês para gerar imagens de apoio visual para a aula: {aula} no formato {formato}. Estilo realista, iluminação de estúdio, 16:9. Apenas texto puro."
 }
 
 # ==========================================
@@ -84,87 +162,114 @@ if "roteiros_gerados" not in st.session_state:
     st.session_state.roteiros_gerados = {}
 
 with st.sidebar:
-    st.header("📂 Arquivos de Base")
-    file_norma = st.file_uploader("1. Norma (Ex: NR-33)", type=["pdf", "docx", "txt"])
-    file_pedagogico = st.file_uploader("2. Projeto Pedagógico", type=["pdf", "docx", "txt"])
-    file_base_producao = st.file_uploader("3. Base de Produção", type=["pdf", "docx", "txt"])
+    st.header("📂 Arquivos (Opcionais)")
+    st.caption("A Base do Saber já está integrada no sistema.")
+    file_norma = st.file_uploader("Norma Completa (PDF/Word)", type=["pdf", "docx", "txt"])
+    file_pedagogico = st.file_uploader("Projeto Pedagógico Específico", type=["pdf", "docx", "txt"])
+    
+    st.divider()
+    st.header("📝 Tema Manual")
+    tema_manual = st.text_area("Se não enviou arquivo, descreva a norma ou o tema central do curso aqui:", height=150)
 
-norma_texto = extrair_texto(file_norma)
+norma_texto = extrair_texto(file_norma) or tema_manual
 pedagogico_texto = extrair_texto(file_pedagogico)
-base_producao_texto = extrair_texto(file_base_producao)
 
-aba_estrutura, aba_roteiros = st.tabs(["🏗️ 1. Estruturar Curso", "📝 2. Produção de Roteiros"])
+aba_estrutura, aba_roteiros = st.tabs(["🏗️ 1. Planejar Estrutura", "📝 2. Produção de Roteiros"])
 
 # ==========================================
-# ABA 1: Geração da Estrutura Inicial
+# ABA 1: Configuração do Curso
 # ==========================================
 with aba_estrutura:
-    st.markdown("Faça o upload dos 3 arquivos na barra lateral para gerar a base do curso.")
+    st.markdown("### Configuração do Projeto")
     
-    arquivos_ok = norma_texto and pedagogico_texto and base_producao_texto
+    col_horas, col_mods = st.columns(2)
+    with col_horas:
+        carga_horaria = st.number_input("Carga Horária (Horas)", min_value=1, value=16, help="Define o volume de aulas nas fases de Fundamentação e Aplicação.")
+    with col_mods:
+        num_modulos = st.number_input("Quantidade de Módulos", min_value=2, value=4)
+        
+    st.markdown("### Estrutura Macro dos Módulos")
+    modulos_config = []
     
-    if not arquivos_ok:
-        st.info("💡 Aguardando upload de todos os arquivos base na lateral para liberar a geração.")
+    for i in range(int(num_modulos)):
+        cm1, cm2, cm3 = st.columns([2, 2, 1])
+        with cm1:
+            nome_m = st.text_input("Nome do Módulo", value=f"Módulo {i+1}", key=f"nm_{i}")
+        with cm2:
+            # Seleciona a fase da Base do Saber
+            fase_m = st.selectbox("Fase do Saber", ["Fase 1 - Despertar a Curiosidade", "Fase 2 - Fundamentação Técnica", "Fase 3 - Aplicação Prática", "Fase 4 - Ação e Reflexão Final"], key=f"fs_{i}")
+        with cm3:
+            formato_m = st.selectbox("Formato", ["Gravado", "Animado", "Misto"], key=f"fm_{i}")
+            
+        modulos_config.append({"nome": f"{nome_m} ({formato_m})", "fase": fase_m, "formato": formato_m})
+
+    st.divider()
     
-    if st.button("🚀 Gerar Estrutura do Curso", disabled=not arquivos_ok):
+    pode_gerar = bool(norma_texto.strip())
+    if not pode_gerar:
+        st.warning("⚠️ Faça o upload de uma Norma ou digite o Tema Manual na barra lateral para liberar a geração.")
+        
+    if st.button("🚀 Gerar Estrutura Completa", disabled=not pode_gerar, use_container_width=True):
         prompt_json = f"""
-        Sua tarefa principal é EXTRAIR a estrutura do curso fornecida no Projeto Pedagógico e formatá-la em JSON.
-        NÃO crie módulos novos. NÃO divida módulos existentes.
+        Você é um arquiteto de cursos da Saber Gestão. 
+        Crie a estrutura de um curso em JSON.
         
-        DOCUMENTO 1 - Norma Técnica:
-        {norma_texto}
+        BASE DO SABER (Regras Pedagógicas Nativas):
+        {BASE_DO_SABER_TEXTO}
         
-        DOCUMENTO 2 - Projeto Pedagógico (A FONTE DA VERDADE):
-        {pedagogico_texto}
+        TEMA/NORMA: {norma_texto}
+        PROJETO PEDAGÓGICO DE APOIO (Se existir): {pedagogico_texto}
         
-        DOCUMENTO 3 - Base de Produção:
-        {base_producao_texto}
+        CONFIGURAÇÃO DO USUÁRIO:
+        - Carga Horária: {carga_horaria} horas. (Use isso para dosar a quantidade de aulas. Módulos das fases 2 e 3 devem ter mais aulas se a carga for alta, e menos se for baixa).
+        - Estrutura de Módulos Solicitada: {json.dumps(modulos_config, ensure_ascii=False)}
         
-        Regras Absolutas:
-        1. O curso deve ter EXATAMENTE a mesma quantidade de módulos descrita no Projeto Pedagógico.
-        2. Copie os nomes dos módulos e as respectivas aulas exatamente como estão no Projeto Pedagógico.
-        3. Aplique as regras da Base de Produção apenas para nomenclatura.
+        REGRAS ABSOLUTAS:
+        1. Respeite as Fases escolhidas pelo usuário para cada módulo.
+        2. O módulo configurado como "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas prescritas na Base do Saber.
+        3. O módulo configurado como "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas prescritas na Base do Saber.
         
-        Retorne estritamente um JSON no seguinte formato:
+        Retorne estritamente um JSON:
         {{
             "modulos": [
                 {{
                     "nome": "Módulo 1 - Nome",
+                    "fase": "Fase 1...",
+                    "formato": "Gravado",
                     "aulas": ["Aula 1.1 - Nome", "Aula 1.2 - Nome"]
                 }}
             ]
         }}
         """
         
-        with st.spinner("Analisando documentos e montando estrutura..."):
+        with st.spinner("Desenhando a estrutura pedagógica do curso..."):
             try:
                 resposta = modelo_estrutura.generate_content(prompt_json)
                 st.session_state.estrutura_curso = json.loads(resposta.text)
-                st.success("✅ Estrutura gerada! Vá para a aba 'Produção de Roteiros'.")
+                st.success("✅ Estrutura gerada com sucesso! Vá para a aba 'Produção de Roteiros'.")
             except Exception as e:
-                st.error("Erro ao processar a estrutura. Verifique os arquivos e tente novamente.")
+                st.error("Erro ao processar a estrutura. Tente novamente.")
 
 # ==========================================
 # ABA 2: Edição e Geração de Conteúdo
 # ==========================================
 with aba_roteiros:
     if st.session_state.estrutura_curso:
-        st.markdown("### 🗂️ Estrutura do Curso")
-        st.caption("Edite os nomes, escolha o template e gere o conteúdo. Os botões de leitura e download aparecerão automaticamente à direita.")
+        st.markdown("### 🗂️ Estrutura e Roteiros")
         
         for idx_mod, modulo in enumerate(st.session_state.estrutura_curso["modulos"]):
-            with st.expander(modulo["nome"], expanded=True):
+            # Mostra o nome do módulo e um badge com o formato escolhido
+            formato_txt = modulo.get("formato", "Misto")
+            with st.expander(f"{modulo['nome']} [{formato_txt}]", expanded=True):
                 
                 novo_nome_mod = st.text_input("Nome do Módulo", value=modulo["nome"], key=f"mod_{idx_mod}")
                 st.session_state.estrutura_curso["modulos"][idx_mod]["nome"] = novo_nome_mod
-                
-                st.divider() # Linha sutil separando o título do módulo da lista de aulas
+                st.divider() 
                 
                 for idx_aula, aula in enumerate(modulo["aulas"]):
                     chave_roteiro = f"{idx_mod}_{idx_aula}"
                     texto_gerado = st.session_state.roteiros_gerados.get(chave_roteiro)
                     
-                    # Colunas alinhadas ao centro para manter a estética impecável
                     col_aula, col_tipo, col_btn, col_ler, col_baixar = st.columns([5, 3, 2, 1, 1], vertical_alignment="center")
                     
                     with col_aula:
@@ -194,13 +299,14 @@ with aba_roteiros:
                                 use_container_width=True
                             )
                             
-                    # Lógica de geração fica separada para não travar o layout
                     if gerar_clicado:
+                        # Puxa o formato daquele módulo específico (Animado, Gravado, Misto) para jogar no prompt
+                        formato_aula = modulo.get("formato", "Gravado")
                         prompt_final = TEMPLATES[tipo_geracao].format(
                             aula=nova_aula, 
                             pedagogico=pedagogico_texto, 
                             norma=norma_texto,
-                            base_producao=base_producao_texto
+                            formato=formato_aula
                         )
                         with st.spinner(f"Escrevendo {tipo_geracao}..."):
                             resultado = modelo_texto.generate_content(prompt_final)
