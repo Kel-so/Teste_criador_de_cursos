@@ -222,10 +222,12 @@ with aba_estrutura:
         - Carga Horária Total: {carga_horaria} horas.
         - Estrutura de Módulos: {json.dumps(modulos_config, ensure_ascii=False)}
         
-        REGRAS ABSOLUTAS:
-        1. "Fase 1 - Despertar a Curiosidade" DEVE ter exatamente as 4 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
-        2. "Fase 4 - Ação e Reflexão Final" DEVE ter exatamente as 2 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
-        3. COBERTURA DA NORMA (FASES 2 E 3): Analise a Norma e extraia 100% do CONTEÚDO PROGRAMÁTICO EXIGIDO. Aloque esses tópicos no campo 'topicos_norma' de cada aula para comprovar o atendimento da norma. Nenhum item exigido pode ficar de fora.
+        REGRAS ABSOLUTAS E SEPARAÇÃO DE FASES:
+        1. MÓDULOS DE FASE 1 (Despertar): DEVEM ter exatamente as 4 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
+        2. MÓDULOS DE FASE 4 (Ação/Reflexão): DEVEM ter exatamente as 2 aulas prescritas na Base do Saber. O campo 'topicos_norma' pode ser "N/A".
+        3. MÓDULOS DE FASE 2 (Fundamentação Técnica - Módulo 2): É OBRIGATÓRIO extrair e cobrir 100% do CONTEÚDO PROGRAMÁTICO TEÓRICO exigido pela norma. Aloque esses tópicos rigorosamente no campo 'topicos_norma'. NENHUM item teórico exigido pela norma pode ficar de fora.
+        4. MÓDULOS DE FASE 3 (Aplicação Prática - Módulo 3): Este módulo NÃO PODE ter aulas teóricas. Crie EXCLUSIVAMENTE aulas de práticas, estudos de caso, simulações, uso de checklists, passo a passo e resolução de problemas reais. O campo 'topicos_norma' deve referenciar a prática do conteúdo abordado.
+        5. DOSAGEM PELA CARGA HORÁRIA: Use a carga horária de {carga_horaria} horas para ditar a fragmentação nas fases 2 e 3. Se a carga for alta, crie mais aulas aprofundadas. Se for baixa, agrupe os tópicos.
         
         Retorne o JSON neste formato exato (substitua os valores com a sua estruturação):
         {{
