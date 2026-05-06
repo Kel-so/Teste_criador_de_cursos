@@ -52,10 +52,10 @@ REGRA ABSOLUTA: Você DEVE estruturar o roteiro rigorosamente conforme o 'Modelo
 Use formatação rica (negrito, tópicos) e emojis. Seu retorno DEVE conter OBRIGATORIAMENTE os seguintes blocos descritos na Base:
 - 🎯 Título Impactante (Curioso e direto)
 - 💬 Frase de Abertura (Para gerar conexão)
-- 🎥 Bloco de Vídeo (O roteiro do que o instrutor vai explicar na câmera, com contexto real)
-- 📝 Bloco de Texto Guiado (Resumo em tópicos curtos e pontos-chave)
-- 🛠️ Bloco de Aplicação (Passo a passo prático para o dia a dia)
-- 🤔 Bloco de Reflexão (Pergunta para o aluno)
+- 🎥 Bloco de Vídeo (ATENÇÃO: Este é o coração da aula. Escreva o roteiro DENSO E DETALHADO do que o instrutor vai explicar na câmera, projetado para durar de 3 a 7 minutos de fala. NÃO RESUMA. Traga a fundamentação técnica completa exigida para esta aula, conectando com a norma, citando exemplos da vida real e mantendo a linguagem humana e direta da Saber Gestão.)
+- 📝 Bloco de Texto Guiado (Resumo em tópicos curtos e pontos-chave com até 3 linhas por bloco)
+- 🛠️ Bloco de Aplicação (Passo a passo prático para o dia a dia, como aplicar)
+- 🤔 Bloco de Reflexão (Pergunta estratégica para o aluno)
 - ❓ Quiz (1 ou 2 questões com 4 alternativas focadas na prática)
 
 Contexto Técnico da Norma: {norma}
